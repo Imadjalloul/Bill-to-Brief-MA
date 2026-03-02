@@ -1,0 +1,20 @@
+[
+  {
+    "name": "sample-rss",
+    "type": "rss",
+    "url": "https://example.org/feed.xml"
+  },
+  {
+    "name": "sample-json",
+    "type": "json",
+    "url": "https://example.org/api/bills",
+    "items_path": "items",
+    "field_map": {
+      "id": "id",
+      "title": "title",
+      "summary": "summary",
+      "url": "url",
+      "published_at": "published_at"
+    }
+  }
+]

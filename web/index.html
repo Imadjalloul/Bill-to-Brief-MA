@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bill-to-Brief Morocco</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Bill-to-Brief Morocco</h1>
+      <p>Track legislative projects from proposal to vote.</p>
+      <button id="refreshBtn" type="button">Refresh</button>
+    </header>
+
+    <main>
+      <section class="stats" aria-live="polite">
+        <div><strong>Total records:</strong> <span id="recordCount">0</span></div>
+        <div><strong>Generated at:</strong> <span id="generatedAt">-</span></div>
+      </section>
+
+      <section>
+        <h2>Latest updates</h2>
+        <ul id="updatesList"></ul>
+      </section>
+
+      <section>
+        <h2>All bills</h2>
+        <ul id="billsList"></ul>
+      </section>
+    </main>
+
+    <template id="itemTemplate">
+      <li class="card">
+        <a class="title" target="_blank" rel="noopener noreferrer"></a>
+        <p class="summary"></p>
+        <small class="meta"></small>
+      </li>
+    </template>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
