@@ -5,6 +5,9 @@ on:
     - cron: "*/30 * * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -20,10 +23,14 @@ jobs:
             --output data/bills.json \
             --state data/state.json \
             --updates data/updates.json
-      - name: Commit updated data
+      - name: Commit and push updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/*.json
-          git diff --cached --quiet || git commit -m "chore: update synced legislative data"
-          git push
+          if git diff --cached --quiet; then
+            echo "No data changes to commit."
+            exit 0
+          fi
+          git commit -m "chore: update synced legislative data"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

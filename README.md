@@ -41,19 +41,52 @@ Each run:
 3. Computes a hash of each record to detect content changes.
 4. Updates state and emits only changed items.
 
-## Deploy as a web app on GitHub
+## How to host this app on GitHub (GitHub Pages)
 
-This repo now includes a static web app and a deployment workflow.
+### 1) Push repository to GitHub
 
-1. Push to `main`.
-2. In GitHub repo settings, enable **Pages** and set source to **GitHub Actions**.
-3. The workflow `.github/workflows/deploy-web.yml` will publish the `web/` app with live JSON from `data/`.
+```bash
+git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
+git push -u origin main
+```
 
-Web files:
+### 2) Enable GitHub Pages
 
-- `web/index.html`
-- `web/app.js`
-- `web/styles.css`
+1. Open your repo on GitHub.
+2. Go to **Settings → Pages**.
+3. Under **Build and deployment**, choose **Source: GitHub Actions**.
+
+### 3) Confirm workflows are enabled
+
+- `.github/workflows/deploy-web.yml` deploys the static UI.
+- `.github/workflows/sync.yml` refreshes `data/*.json` every 30 minutes.
+
+### 4) Set Actions permissions (important)
+
+In **Settings → Actions → General**:
+
+- Set **Workflow permissions** to **Read and write permissions**.
+- Enable **Allow GitHub Actions to create and approve pull requests** (optional but useful).
+
+### 5) Visit your live URL
+
+After the deploy workflow succeeds, your app is at:
+
+- `https://<YOUR_USERNAME>.github.io/<YOUR_REPO>/`
+
+> If you renamed your default branch from `main`, update workflow branch filters accordingly.
+
+## Quick troubleshooting
+
+### Page loads but shows `0` records / `No records found`
+
+- Your `config/sources.json` still has placeholder `example.org` URLs.
+- Replace them with real Moroccan legislative RSS/API sources, then run sync once locally or trigger workflow manually.
+
+### Sync workflow fails on push
+
+- Check Actions permissions are set to **Read and write**.
+- Ensure branch protection rules allow workflow bot pushes, or change workflow to open PRs instead.
 
 ## Source config format
 
