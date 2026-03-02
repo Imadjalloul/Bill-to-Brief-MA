@@ -1,0 +1,50 @@
+name: Deploy Bill-to-Brief Web App
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "web/**"
+      - "data/**"
+      - ".github/workflows/deploy-web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build static artifact
+        run: |
+          mkdir -p dist/data
+          cp web/index.html dist/index.html
+          cp web/app.js dist/app.js
+          cp web/styles.css dist/styles.css
+          cp data/bills.json dist/data/bills.json
+          cp data/updates.json dist/data/updates.json
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
