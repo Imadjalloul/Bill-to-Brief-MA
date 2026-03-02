@@ -1,5 +1,7 @@
 # Bill-to-Brief MA 🇲🇦
 
+[![Try it live](https://img.shields.io/badge/Try%20it-live-0ea5e9?style=for-the-badge)](https://<YOUR_USERNAME>.github.io/<YOUR_REPO>/)
+
 A lightweight Morocco-focused legislative tracker that:
 
 - collects bill/project updates from online sources,
@@ -109,6 +111,8 @@ Live URL format:
 ```text
 https://<YOUR_USERNAME>.github.io/<YOUR_REPO>/
 ```
+
+After your first successful deploy, replace the placeholder link at the top of this README with your real URL so the **Try it live** button works.
 
 ---
 
