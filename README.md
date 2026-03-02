@@ -1,17 +1,42 @@
-# Bill-to-Brief-MA
+# Bill-to-Brief MA 🇲🇦
 
-Automated data ingestion starter for a Morocco-focused legislative tracker.
+A lightweight Morocco-focused legislative tracker that:
 
-## What this adds
+- collects bill/project updates from online sources,
+- normalizes them into one format,
+- keeps a change log of newly updated records,
+- and publishes a static web app on GitHub Pages.
 
-- Scheduled sync script that can pull from RSS and JSON sources.
-- Change detection to only publish new/updated items.
-- Persisted state for "keep it updated" behavior.
-- Static web UI (`web/`) that renders bills and recent updates.
-- GitHub Pages deployment workflow for the web app.
-- Basic tests using local fixtures.
+---
 
-## Quick start (data sync)
+## Project structure
+
+```text
+.
+├── automation/
+│   └── sync_legislation.py      # fetch + normalize + diff detection
+├── config/
+│   └── sources.json             # data source configuration
+├── data/
+│   ├── bills.json               # full current dataset
+│   ├── updates.json             # only new/changed records
+│   └── state.json               # fingerprints + sync state
+├── web/
+│   ├── index.html               # static UI
+│   ├── app.js                   # fetch/render logic
+│   └── styles.css               # styling
+├── tests/
+│   └── test_sync_legislation.py
+└── .github/workflows/
+    ├── sync.yml                 # scheduled data refresh
+    └── deploy-web.yml           # GitHub Pages deployment
+```
+
+---
+
+## Quick start
+
+### 1) Run sync locally
 
 ```bash
 python3 automation/sync_legislation.py \
@@ -21,76 +46,27 @@ python3 automation/sync_legislation.py \
   --updates data/updates.json
 ```
 
-The script writes:
-
-- `data/bills.json`: full normalized catalog
-- `data/state.json`: source-level and item-level sync metadata
-- `data/updates.json`: only newly discovered/changed items
-
-## Keep it updated automatically
-
-Use a scheduler:
-
-- GitHub Actions cron (`.github/workflows/sync.yml`)
-- or server cron (`*/30 * * * *`)
-
-Each run:
-
-1. Fetches every configured source.
-2. Normalizes records into common fields (`id`, `title`, `summary`, `url`, `published_at`, `source`).
-3. Computes a hash of each record to detect content changes.
-4. Updates state and emits only changed items.
-
-## How to host this app on GitHub (GitHub Pages)
-
-### 1) Push repository to GitHub
+### 2) Run tests
 
 ```bash
-git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
-git push -u origin main
+python3 -m unittest -v tests/test_sync_legislation.py
 ```
 
-### 2) Enable GitHub Pages
+### 3) Preview web app locally
 
-1. Open your repo on GitHub.
-2. Go to **Settings → Pages**.
-3. Under **Build and deployment**, choose **Source: GitHub Actions**.
+```bash
+python3 -m http.server 4173
+```
 
-### 3) Confirm workflows are enabled
+Open: `http://localhost:4173/web/index.html`
 
-- `.github/workflows/deploy-web.yml` deploys the static UI.
-- `.github/workflows/sync.yml` refreshes `data/*.json` every 30 minutes.
+---
 
-### 4) Set Actions permissions (important)
+## Configure real sources
 
-In **Settings → Actions → General**:
+Edit `config/sources.json` and replace placeholders with real Moroccan sources.
 
-- Set **Workflow permissions** to **Read and write permissions**.
-- Enable **Allow GitHub Actions to create and approve pull requests** (optional but useful).
-
-### 5) Visit your live URL
-
-After the deploy workflow succeeds, your app is at:
-
-- `https://<YOUR_USERNAME>.github.io/<YOUR_REPO>/`
-
-> If you renamed your default branch from `main`, update workflow branch filters accordingly.
-
-## Quick troubleshooting
-
-### Page loads but shows `0` records / `No records found`
-
-- Your `config/sources.json` still has placeholder `example.org` URLs.
-- Replace them with real Moroccan legislative RSS/API sources, then run sync once locally or trigger workflow manually.
-
-### Sync workflow fails on push
-
-- Check Actions permissions are set to **Read and write**.
-- Ensure branch protection rules allow workflow bot pushes, or change workflow to open PRs instead.
-
-## Source config format
-
-`config/sources.json`:
+Example formats:
 
 ```json
 [
@@ -115,8 +91,29 @@ After the deploy workflow succeeds, your app is at:
 ]
 ```
 
+> If the UI shows 0 records, it usually means sources are still placeholders or fetch failed.
+
+---
+
+## Deploy on GitHub Pages
+
+1. Push repo to GitHub (`main` branch).
+2. In **Settings → Pages**, set **Source = GitHub Actions**.
+3. In **Settings → Actions → General**, set **Workflow permissions = Read and write**.
+4. Trigger workflows:
+   - `Sync Legislative Sources` (fills `data/*.json`)
+   - `Deploy Bill-to-Brief Web App` (publishes site)
+
+Live URL format:
+
+```text
+https://<YOUR_USERNAME>.github.io/<YOUR_REPO>/
+```
+
+---
+
 ## Notes
 
-- Start with manual curation + one reliable official feed.
-- Expand with more sources once normalization is stable.
-- Add anti-blocking etiquette (respect robots, rate-limit, cache) before scaling.
+- Start with a small list of trusted official sources.
+- Keep summaries short and useful for end users.
+- Respect robots.txt and source terms when scraping.
